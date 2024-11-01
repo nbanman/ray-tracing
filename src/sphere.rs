@@ -3,13 +3,19 @@ use std::sync::Arc;
 use crate::prelude::*;
 
 pub struct Sphere {
-    center: Point3,
+    center: Ray,
     radius: f64,
     mat: Arc<dyn Material>,
 }
 
 impl Sphere {
-    pub fn new(center: Point3, radius: f64, mat: Arc<dyn Material>) -> Self {
+    pub fn stationary(static_center: Point3, radius: f64, mat: Arc<dyn Material>) -> Self {
+        let center = Ray::new(static_center, Vec3::zero(), 0.0);
+        Sphere { center, radius, mat, }
+    }
+
+    pub fn moving(center1: Point3, center2: Point3, radius: f64, mat: Arc<dyn Material>) -> Self {
+        let center = Ray::new(center1, center2 - center1, 0.0);
         Sphere { center, radius, mat, }
     }
 }
@@ -21,7 +27,8 @@ impl Hittable for Sphere {
         ray_t: Interval, 
     ) -> Option<HitRecord> 
     {
-        let oc = self.center - r.origin;
+        let current_center = self.center.at(r.time);
+        let oc = current_center - r.origin;
         let a = r.direction.len_squared();
         let h = dot(r.direction, oc);
         let c = oc.len_squared() - self.radius * self.radius;
@@ -45,7 +52,7 @@ impl Hittable for Sphere {
             t: root,
             front_face: Default::default(),
         };
-        let outward_normal = (rec.p - self.center) / self.radius;
+        let outward_normal = (rec.p - current_center) / self.radius;
         rec.set_face_normal(r, outward_normal);
         Some(rec)
     }

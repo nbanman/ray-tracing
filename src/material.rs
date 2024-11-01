@@ -28,7 +28,7 @@ impl Lambertian {
 impl Material for Lambertian {
     fn scatter(
             &self,
-            _r_in: &Ray,
+            r_in: &Ray,
             rec: &HitRecord,
         ) -> Option<ScatterRecord> 
     {
@@ -40,7 +40,7 @@ impl Material for Lambertian {
 
         Some(ScatterRecord {
             attenuation: self.albedo,
-            scattered: Ray::new(rec.p, scatter_direction),
+            scattered: Ray::new(rec.p, scatter_direction, r_in.time),
         })
     }
 }
@@ -67,7 +67,7 @@ impl Material for Metal {
         let reflected = reflect(r_in.direction.unit_vector(), rec.normal);
         let reflected = reflected.unit_vector() + (self.fuzz * random_unit_vector());
         
-        let scattered = Ray::new(rec.p, reflected);
+        let scattered = Ray::new(rec.p, reflected, r_in.time);
 
         if dot(scattered.direction, rec.normal) > 0.0 {
             Some(ScatterRecord {
@@ -123,7 +123,7 @@ impl Material for Dielectric {
 
         Some(ScatterRecord {
             attenuation: Color::new(1.0, 1.0, 1.0),
-            scattered: Ray::new(rec.p, direction),
+            scattered: Ray::new(rec.p, direction, r_in.time),
         })
     }
 }

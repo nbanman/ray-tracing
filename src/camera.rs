@@ -117,7 +117,9 @@ impl Camera {
         };
         let direction = pixel_sample - origin;
 
-        Ray { origin, direction  }
+        let ray_time = random();
+
+        Ray { origin, direction, time: ray_time }
     }
 
     fn defocus_disk_sample(&self) -> Point3 {
