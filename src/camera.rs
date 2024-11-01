@@ -138,20 +138,12 @@ impl Camera {
         // If we've exceeded the ray bounce limit, no more light is gathered.
         if max_depth <= 0 { return Color::zero(); }
 
-        let mut rec = HitRecord::new();
-        if world.hit(r, Interval::new(0.001, INFINITY), &mut rec) {
-            let mut scattered = Ray::default();
-            let mut attenuation = Color::zero();
-            return if rec
-                .mat
-                .as_ref()
-                .unwrap()
-                .scatter(r, &rec, &mut attenuation, &mut scattered)
-            {
-                attenuation * Self::ray_color(&scattered, max_depth - 1, world)
-            } else {
-                Color::zero()
-            };
+        if let Some(rec) = world.hit(r, Interval::new(0.001, INFINITY)) {
+            if let Some(scatter_rec) = rec.mat.scatter(r, &rec) {
+                return scatter_rec.attenuation 
+                    * Self::ray_color(&scatter_rec.scattered, max_depth - 1, world);
+            }
+            return Color::zero();
         }
     
         let unit_direction = r.direction.unit_vector();

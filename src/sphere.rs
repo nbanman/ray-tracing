@@ -19,8 +19,7 @@ impl Hittable for Sphere {
         &self, 
         r: &crate::ray::Ray, 
         ray_t: Interval, 
-        rec: &mut HitRecord,
-    ) -> bool 
+    ) -> Option<HitRecord> 
     {
         let oc = self.center - r.origin;
         let a = r.direction.len_squared();
@@ -28,7 +27,7 @@ impl Hittable for Sphere {
         let c = oc.len_squared() - self.radius * self.radius;
         let discriminant = h * h - a * c;
     
-        if discriminant < 0.0 { return false; }
+        if discriminant < 0.0 { return None; }
 
         let sqrtd = discriminant.sqrt();
 
@@ -36,14 +35,18 @@ impl Hittable for Sphere {
         let mut root = (h - sqrtd) / a;
         if !ray_t.surrounds(root) {
             root = (h + sqrtd) / a;
-            if !ray_t.surrounds(root) { return false;}
+            if !ray_t.surrounds(root) { return None;}
         }
 
-        rec.t = root;
-        rec.p = r.at(rec.t);
+        let mut rec = HitRecord {
+            p: r.at(root),
+            normal: Default::default(),
+            mat: self.mat.clone(),
+            t: root,
+            front_face: Default::default(),
+        };
         let outward_normal = (rec.p - self.center) / self.radius;
-        rec.set_face_normal(r, &outward_normal);
-        rec.mat = Some(self.mat.clone());
-        true
+        rec.set_face_normal(r, outward_normal);
+        Some(rec)
     }
 }
