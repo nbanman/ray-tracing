@@ -104,9 +104,9 @@ fn main() -> std::io::Result<()> {
 
     let cam = Camera::new(
         16.0 / 9.0,
-        300,
-        10,
-        20,
+        1200,
+        500,
+        50,
         20.0,
         Point3::new(13.0, 2.0, 3.0),
         Point3::zero(),
@@ -114,45 +114,6 @@ fn main() -> std::io::Result<()> {
         0.6,
         10.0
     );
-
-    // let material_ground = Arc::new(Lambertian::new(Color::new(0.8, 0.8, 0.0)));
-    // let material_center = Arc::new(Lambertian::new(Color::new(0.1, 0.2, 0.5)));
-    // let material_left = Arc::new(Metal::new(Color::new(0.8, 0.8, 0.8), 0.3));
-    // let material_right = Arc::new(Metal::new(Color::new(0.8, 0.6, 0.2), 1.0));
- 
-    // world.objects.push(Box::new(Sphere::new(
-    //     Point3::new(0.0, -100.5, -1.0),
-    //     100.0,
-    //     material_ground,
-    // )));
-    // world.objects.push(Box::new(Sphere::new(
-    //     Point3::new(0.0, 0.0, -1.0),
-    //     0.5,
-    //     material_center,
-    // )));
-    // world.objects.push(Box::new(Sphere::new(
-    //     Point3::new(-1.0, 0.0, -1.0),
-    //     0.5,
-    //     material_left,
-    // )));
-    // world.objects.push(Box::new(Sphere::new(
-    //     Point3::new(1.0, 0.0, -1.0),
-    //     0.5,
-    //     material_right,
-    // )));
-
-    // let cam = Camera::new(
-    //     16.0 / 9.0,
-    //     300,
-    //     100,
-    //     100,
-    //     90.0,
-    //     Point3::new(-0.0, 0.0, 0.0),
-    //     Point3::new(0.0, 0.0, -1.0),
-    //     Vec3::new(0.0, 1.0, 0.0),
-    //     0.0,
-    //     0.01
-    // );
 
     cam.render(&world, &mut writer)?;
     
